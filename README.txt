@@ -63,30 +63,12 @@ product-sales-dashboard/
 - How to use AI to support storytelling, summarization, and decision-making  
 - How to package insights into a polished, portfolio-ready report  
 
----
-
-## 🚀 Getting Started
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/yourusername/product-sales-dashboard.git
-   cd product-sales-dashboard
-   ```
-
-2. Open `product-report.html` in your browser to view the dashboard.
-
-> 💡 Tip: You can also host this file using GitHub Pages or Netlify for public access.
-
----
-
 ## 🧠 Author
 
-**Ino Suke** – [LinkedIn](#) | [Portfolio](#)
+**Ros Dion**
 
-If you're looking for a data visualization specialist who understands both numbers and business — I'm open to freelance, contract, or full-time roles.
+If you're looking for a data visualization specialist who understands both numbers and business, I'm open to freelance, contract, or full-time roles.
 
 ---
 
-## 📄 License
-
-MIT License — free to use and modify for learning purposes.
+## free to use and modify for learning purposes.
