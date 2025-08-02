@@ -1,0 +1,236 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {"products.csv":false};
+        var gk_fileData = {"products.csv":"Name,Discount Price,Original Price,Discount (%),Sold Count,Rating,Category,Note\r\n\"[All CategoriesBundle dealsChoiceRumah dan TamanEkstensi Rambut & wigPakaian priaAksesoris aksesorisPeralatan Elektronik konsumenPerbaikan & pencahayaan rumahPeralatan rumah tanggaOtomotif & MotorMoreBig SaleSale Ends:Aug 6, 14:59 (GMT+8)Diskon Rp336,845pesanan lebih dari Rp2,846,339Code:CD0820Code:CD0820Diskon Rp336,845pesanan lebih dari Rp2,846,339Diskon Rp168,422pesanan lebih dari Rp1,330,537Code:CD0810Code:CD0810Diskon Rp168,422pesanan lebih dari Rp1,330,537Diskon Rp117,896pesanan lebih dari Rp993,692Code:CD0807Code:CD0807Diskon Rp117,896pesanan lebih dari Rp993,692Home essentialsRp94,990Rp94,990Big SaleToday's dealsTerlarisPilihan berkualitas & harga terbaikDeep Curly Wigs Human Hair Chocolate Brown 13x4 13x6 Hd Lace Frontal Wig Colored Water Wave Lace Front Wig for Women 30 36 Inch\",50.77,174.354,,92000,,Hair,\r\n128G R36S Retro Handheld Video Game Console Linux System 3.5 Inch IPS Screen R35s Pro Portable Pocket Video Player 64GB Games,39.03,172.314,,750000,,General,\r\n2025 NEW Dewalt DW089LG 3 Sides*360 Degree Vertical 12V Lithium Battery 12 Lines Laser Level 360 Horizontal Green Meter Outdoor,48.16,173.944,,5163,,General,\r\nMACHINIST B450 Motherboard AMD Processor Dual-channel DDR4 Memory AM4 Mainboard M.2 NVME (Supports Ryzen 5500 5600 5600G CPU),48.66,175.494,,85000,,General,\r\nVxe Dragonfly R1 ProMax Gaming Mouse Bluetooth Mouse Rechargeable Gamer Paw3395 Lightweight Ergonomic Wireless Mouse Esport,10.00,46.054,,910000,,General,\r\n10KG PLA Filament PETG 3d Filament 1.75mm For 3D Printer Filament 10rolls/set Mixed colors and materials FDM Printing Fast Ship,75.65,244.344,,81000,,General,\r\nDeep Curly Wigs Human Hair Chocolate Brown 13x4 13x6 Hd Lace Frontal Wig Colored Water Wave Lace Front Wig for Women 30 36 Inch,50.77,174.354,,92000,,Hair,\r\n128G R36S Retro Handheld Video Game Console Linux System 3.5 Inch IPS Screen R35s Pro Portable Pocket Video Player 64GB Games,39.03,172.314,,750000,,General,\r\n2025 NEW Dewalt DW089LG 3 Sides*360 Degree Vertical 12V Lithium Battery 12 Lines Laser Level 360 Horizontal Green Meter Outdoor,48.16,173.944,,5163,,General,\r\nMACHINIST B450 Motherboard AMD Processor Dual-channel DDR4 Memory AM4 Mainboard M.2 NVME (Supports Ryzen 5500 5600 5600G CPU),48.66,175.494,,85000,,General,\r\nVxe Dragonfly R1 ProMax Gaming Mouse Bluetooth Mouse Rechargeable Gamer Paw3395 Lightweight Ergonomic Wireless Mouse Esport,10.00,46.054,,910000,,General,\r\n10KG PLA Filament PETG 3d Filament 1.75mm For 3D Printer Filament 10rolls/set Mixed colors and materials FDM Printing Fast Ship,75.65,244.344,,81000,,General,\r\n"};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Sales Report</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chrono-node/1.3.11/chrono.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.15.0/Recharts.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div id="root"></div>
+  <script type="text/babel">
+    // Initializing React and Recharts dependencies
+    const { useState, useEffect } = React;
+    const { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+    // Defining numerical abbreviation function for large numbers
+    const abbreviateNumber = (num) => {
+      if (isNaN(num) || num === null) return '0';
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    };
+
+    // Defining main App component
+    const App = () => {
+      const [data, setData] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      // Loading and processing CSV data
+      useEffect(() => {
+        const csv = loadFileData("products.csv");
+        Papa.parse(csv, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (header) => header.trim().replace(/^"|"$/g, ''),
+          transform: (value, header) => {
+            let cleaned = value.trim().replace(/^"|"$/g, '');
+            return cleaned;
+          },
+          complete: (results) => {
+            const cleanedData = results.data.map(row => ({
+              name: row["Name"] || "Unknown",
+              discountPrice: parseFloat(row["Discount Price"]) || 0,
+              originalPrice: parseFloat(row["Original Price"]) || 0,
+              discountPercent: parseFloat(row["Discount (%)"]) || ((row["Original Price"] && row["Discount Price"]) ? (1 - row["Discount Price"] / row["Original Price"]) * 100 : 0),
+              soldCount: parseInt(row["Sold Count"]) || 0,
+              category: row["Category"] || "Unknown",
+            })).filter(row => row.name !== "Unknown" && row.discountPrice > 0 && row.originalPrice > 0 && row.soldCount > 0);
+            setData(cleanedData);
+            setLoading(false);
+          },
+          error: (err) => {
+            console.error("Error parsing CSV:", err);
+            setLoading(false);
+          }
+        });
+      }, []);
+
+      // Preparing data for pie chart (category distribution)
+      const categoryData = data.reduce((acc, item) => {
+        acc[item.category] = (acc[item.category] || 0) + 1;
+        return acc;
+      }, {});
+      const pieData = Object.keys(categoryData).map(key => ({
+        name: key,
+        value: categoryData[key]
+      }));
+
+      // Defining colors for charts
+      const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'];
+
+      // Rendering loading state
+      if (loading) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-2xl text-gray-700">Loading data...</p>
+          </div>
+        );
+      }
+
+      // Rendering main report content
+      return (
+        <div className="container mx-auto p-6">
+          {/* Displaying report title and summary */}
+          <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">Product Sales Report</h1>
+          <p className="text-lg text-gray-600 mb-8 text-center">
+            This report analyzes product sales data, highlighting popularity, pricing, and category distribution. An interesting fact: the Vxe Dragonfly Gaming Mouse has sold 910,000 units, likely due to its exceptionally low discount price of $10.00, making it a standout in the dataset.
+          </p>
+
+          {/* Displaying bar chart for sold count */}
+          <div className="mb-12 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Product Popularity (Sold Count)</h2>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={100} />
+                <YAxis tickFormatter={abbreviateNumber} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => abbreviateNumber(value)} />
+                <Legend />
+                <Bar dataKey="soldCount" fill="#FF6B6B" name="Sold Count" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Displaying pie chart for category distribution */}
+          <div className="mb-12 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Category Distribution</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Displaying bar chart for price comparison */}
+          <div className="mb-12 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Price Comparison (Discount vs Original)</h2>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={100} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                <Legend />
+                <Bar dataKey="discountPrice" fill="#4ECDC4" name="Discount Price" />
+                <Bar dataKey="originalPrice" fill="#45B7D1" name="Original Price" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Displaying product details table */}
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Product Details</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="p-3">Name</th>
+                    <th className="p-3">Discount Price ($)</th>
+                    <th className="p-3">Original Price ($)</th>
+                    <th className="p-3">Sold Count</th>
+                    <th className="p-3">Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="p-3">{item.name}</td>
+                      <td className="p-3">{item.discountPrice.toFixed(2)}</td>
+                      <td className="p-3">{item.originalPrice.toFixed(2)}</td>
+                      <td className="p-3">{abbreviateNumber(item.soldCount)}</td>
+                      <td className="p-3">{item.category}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Displaying conclusion */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Conclusion</h2>
+            <p className="text-lg text-gray-600">
+              The data reveals significant variation in product popularity, with the Vxe Dragonfly Gaming Mouse leading in sales (910K units) due to its low price point. The dataset is dominated by General category products, with Hair products making up a smaller portion. Discounts are substantial, particularly for 3D printer filament, which offers the highest discount percentage. This report suggests focusing on high-demand, low-priced items like the gaming mouse to drive sales, while exploring strategies to boost visibility for less popular items like the laser level.
+            </p>
+          </div>
+        </div>
+      );
+    };
+
+    // Rendering the app using createRoot
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
